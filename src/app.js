@@ -16,6 +16,8 @@ dotenv.config({ path: "./env/.env" });
 app.use("/resources", express.static("public"));
 app.use("/resources", express.static(__dirname + "/public"));
 
+
+//SERVER
 app.listen(app.get("port"), () => {
   console.log("Listening your port ", app.get("port"));
 });
@@ -64,6 +66,10 @@ app.get("/login", (req, res) => {
 
 app.get("/register", (req, res) => {
   res.render("register");
+});
+
+app.get("/index", (req, res) => {
+  res.render("index");
 });
 
 //REGISTRATION
@@ -156,7 +162,7 @@ app.post("/auth", async (req, res) => {
   }
 });
 
-// AUTH PAGES
+// AUTH PAGES AFTER LOGGED
 app.get('/',(req, res)=>{
     if(req.session.loggedin){
         res.render('index',{
@@ -179,3 +185,24 @@ app.get('/logout', (req, res) =>{
 })
 
 
+//RUTA PARA FILTRAR LA TABLE
+app.get('/filtrar', (req, res) => {
+  const type = req.query.type;
+
+  //CONSULTA SQL PARA FILTRAR POR TYPE
+  const sql = `SELECT * FROM type WHERE type LIKE 'beber'`;
+
+  //EJECUTAR LA CONSULTA
+  connectionx.query(sql, (err, result) => {
+    if(err) {
+      console.error('Error al ejecutar la consulta: ', err);
+      res.status(500).send('error del servidor');
+      return;
+    }
+
+    console.log(result);
+
+    //ENVIAR RESULTADOS COMO RESPUESTA EN FORMATO JSON
+    res.json(result);
+  });
+});
